@@ -1,0 +1,143 @@
+-- 1️⃣ Create the database
+IF DB_ID('K2U2Library') IS NOT NULL
+    DROP DATABASE K2U2Library;
+GO
+
+CREATE DATABASE K2U2Library;
+GO
+
+USE K2U2Library;
+GO
+
+-- 2️⃣ Create Book table
+CREATE TABLE Book (
+    BookID INT IDENTITY(1,1) PRIMARY KEY,
+    ISBN VARCHAR(20) NOT NULL,
+    Title NVARCHAR(255) NOT NULL,
+    Author NVARCHAR(255) NOT NULL,
+    PublishedYear INT NOT NULL,
+    CopiesTotal INT NOT NULL,
+    CopiesAvailable INT NOT NULL
+);
+GO
+
+-- 3️⃣ Create Member table
+CREATE TABLE Member (
+    MemberID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(100) NOT NULL,
+    LastName NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(255) NOT NULL,
+    Phone NVARCHAR(50) NOT NULL
+);
+GO
+
+-- 4️⃣ Create Loan table
+CREATE TABLE Loan (
+    LoanID INT IDENTITY(1,1) PRIMARY KEY,
+    BookID INT NOT NULL,
+    MemberID INT NOT NULL,
+    LoanDate DATETIME NOT NULL DEFAULT GETDATE(),
+    DueDate DATETIME NOT NULL,
+    ReturnDate DATETIME NULL,
+    CONSTRAINT FK_Loan_Book FOREIGN KEY (BookID) REFERENCES Book(BookID),
+    CONSTRAINT FK_Loan_Member FOREIGN KEY (MemberID) REFERENCES Member(MemberID)
+);
+GO
+
+-- 5️⃣ Insert Books (fantasy + sci-fi collection)
+INSERT INTO Book (ISBN, Title, Author, PublishedYear, CopiesTotal, CopiesAvailable) VALUES
+('9780747532743', 'Harry Potter and the Philosopher''s Stone', 'J.K. Rowling', 1997, 6, 6),
+('9780747538493', 'Harry Potter and the Chamber of Secrets', 'J.K. Rowling', 1998, 6, 6),
+('9780747542155', 'Harry Potter and the Prisoner of Azkaban', 'J.K. Rowling', 1999, 6, 6),
+('9780747546245', 'Harry Potter and the Goblet of Fire', 'J.K. Rowling', 2000, 6, 6),
+('9780747551003', 'Harry Potter and the Order of the Phoenix', 'J.K. Rowling', 2003, 6, 6),
+('9780747581086', 'Harry Potter and the Half-Blood Prince', 'J.K. Rowling', 2005, 6, 6),
+('9780545139700', 'Harry Potter and the Deathly Hallows', 'J.K. Rowling', 2007, 6, 6),
+('9780441172719', 'Dune', 'Frank Herbert', 1965, 5, 5),
+('9780441013593', 'Dune Messiah', 'Frank Herbert', 1969, 5, 5),
+('9780441104024', 'Children of Dune', 'Frank Herbert', 1976, 5, 5),
+('9780441327992', 'God Emperor of Dune', 'Frank Herbert', 1981, 5, 5),
+('9780441328005', 'Heretics of Dune', 'Frank Herbert', 1984, 5, 5),
+('9780441328012', 'Chapterhouse: Dune', 'Frank Herbert', 1985, 5, 5),
+('9780544003415', 'The Fellowship of the Ring', 'J.R.R. Tolkien', 1954, 5, 5),
+('9780544003416', 'The Two Towers', 'J.R.R. Tolkien', 1954, 5, 5),
+('9780544003417', 'The Return of the King', 'J.R.R. Tolkien', 1955, 5, 5),
+('9780345323766', 'The Sword of Shannara', 'Terry Brooks', 1977, 4, 4),
+('9780345323773', 'The Elfstones of Shannara', 'Terry Brooks', 1982, 4, 4),
+('9780345323780', 'The Wishsong of Shannara', 'Terry Brooks', 1985, 4, 4),
+('9780451457813', 'Storm Front', 'Jim Butcher', 2000, 4, 4),
+('9780451458124', 'Fool Moon', 'Jim Butcher', 2001, 4, 4),
+('9780451458445', 'Grave Peril', 'Jim Butcher', 2001, 4, 4),
+('9780451458926', 'Summer Knight', 'Jim Butcher', 2002, 4, 4),
+('9780451459428', 'Death Masks', 'Jim Butcher', 2003, 4, 4),
+('9780451459848', 'Blood Rites', 'Jim Butcher', 2004, 4, 4),
+('9780451460417', 'Dead Beat', 'Jim Butcher', 2005, 4, 4),
+('9780451461032', 'Proven Guilty', 'Jim Butcher', 2006, 4, 4),
+('9780451461407', 'White Night', 'Jim Butcher', 2007, 4, 4),
+('9780451462008', 'Small Favor', 'Jim Butcher', 2008, 4, 4),
+('9780345451322', 'Halo: The Fall of Reach', 'Eric Nylund', 2001, 3, 3),
+('9780345459205', 'Halo: The Flood', 'William C. Dietz', 2003, 3, 3),
+('9780345459212', 'Halo: First Strike', 'Eric Nylund', 2003, 3, 3),
+('9780765324931', 'Halo: Ghosts of Onyx', 'Eric Nylund', 2006, 3, 3),
+('9780765367297', 'Halo: Contact Harvest', 'Joseph Staten', 2007, 3, 3),
+('9780765328342', 'Halo: The Cole Protocol', 'Tobias S. Buckell', 2008, 3, 3),
+('9780765366825', 'Halo: Evolutions Vol. I', 'Various', 2009, 3, 3),
+('9780765366832', 'Halo: Evolutions Vol. II', 'Various', 2009, 3, 3),
+('9780765331878', 'Halo: Glasslands', 'Karen Traviss', 2011, 3, 3),
+('9780765331885', 'Halo: The Thursday War', 'Karen Traviss', 2012, 3, 3);
+('9780552138901', 'The Colour of Magic', 'Terry Pratchett', 1983, 4, 4),
+('9780552138918', 'The Light Fantastic', 'Terry Pratchett', 1986, 4, 4),
+('9780552138932', 'Equal Rites', 'Terry Pratchett', 1987, 4, 4),
+('9780552138949', 'Mort', 'Terry Pratchett', 1987, 4, 4),
+('9780552138956', 'Sourcery', 'Terry Pratchett', 1988, 4, 4),
+('9780552138963', 'Wyrd Sisters', 'Terry Pratchett', 1988, 4, 4),
+('9780552138970', 'Pyramids', 'Terry Pratchett', 1989, 4, 4),
+('9780552138987', 'Guards! Guards!', 'Terry Pratchett', 1989, 5, 5),
+('9780552138994', 'Eric', 'Terry Pratchett', 1990, 3, 3),
+('9780552139007', 'Moving Pictures', 'Terry Pratchett', 1990, 4, 4),
+('9780552139014', 'Reaper Man', 'Terry Pratchett', 1991, 4, 4),
+('9780552139021', 'Witches Abroad', 'Terry Pratchett', 1991, 4, 4),
+('9780552139038', 'Small Gods', 'Terry Pratchett', 1992, 5, 5),
+('9780552139045', 'Lords and Ladies', 'Terry Pratchett', 1992, 4, 4),
+('9780552139052', 'Men at Arms', 'Terry Pratchett', 1993, 5, 5),
+('9780552139069', 'Soul Music', 'Terry Pratchett', 1994, 4, 4),
+('9780552139076', 'Interesting Times', 'Terry Pratchett', 1994, 4, 4),
+('9780552139083', 'Maskerade', 'Terry Pratchett', 1995, 4, 4),
+('9780552139090', 'Feet of Clay', 'Terry Pratchett', 1996, 5, 5),
+('9780552139106', 'Hogfather', 'Terry Pratchett', 1996, 5, 5),
+('9780552139113', 'Jingo', 'Terry Pratchett', 1997, 5, 5),
+('9780552139120', 'The Last Continent', 'Terry Pratchett', 1998, 4, 4),
+('9780552139137', 'Carpe Jugulum', 'Terry Pratchett', 1998, 4, 4),
+('9780552139144', 'The Fifth Elephant', 'Terry Pratchett', 1999, 5, 5),
+('9780552139151', 'The Truth', 'Terry Pratchett', 2000, 4, 4),
+('9780552139168', 'Thief of Time', 'Terry Pratchett', 2001, 5, 5);
+GO
+
+-- 6️⃣ Insert Members (20 people)
+INSERT INTO Member (FirstName, LastName, Email, Phone)
+VALUES
+('Ethan', 'Cole', 'ethan.cole@example.com', '0701234567'),
+('Mila', 'Berg', 'mila.berg@example.com', '0702345678'),
+('Lucas', 'Vinter', 'lucas.vinter@example.com', '0703456789'),
+('Sofia', 'Holm', 'sofia.holm@example.com', '0704567890'),
+('Noah', 'Strand', 'noah.strand@example.com', '0705678901'),
+('Ella', 'Fors', 'ella.fors@example.com', '0706789012'),
+('Liam', 'Nord', 'liam.nord@example.com', '0707890123'),
+('Isabella', 'Lind', 'isabella.lind@example.com', '0708901234'),
+('Oliver', 'Sjöberg', 'oliver.sjoberg@example.com', '0709012345'),
+('Ava', 'Sand', 'ava.sand@example.com', '0700123456'),
+('William', 'Åkesson', 'william.akesson@example.com', '0701122334'),
+('Freya', 'Hedlund', 'freya.hedlund@example.com', '0702233445'),
+('Benjamin', 'Grön', 'benjamin.gron@example.com', '0703344556'),
+('Alma', 'Ek', 'alma.ek@example.com', '0704455667'),
+('Henry', 'Björk', 'henry.bjork@example.com', '0705566778'),
+('Nora', 'Dahl', 'nora.dahl@example.com', '0706677889'),
+('Oscar', 'Falk', 'oscar.falk@example.com', '0707788990'),
+('Stella', 'Löv', 'stella.lov@example.com', '0708899001'),
+('Theodore', 'Nyström', 'theodore.nystrom@example.com', '0709900112'),
+('Emma', 'Sund', 'emma.sund@example.com', '0701011121');
+GO
+
+-- 7️⃣ Verify
+SELECT * FROM Book ORDER BY BookID;
+SELECT * FROM Member ORDER BY MemberID;
