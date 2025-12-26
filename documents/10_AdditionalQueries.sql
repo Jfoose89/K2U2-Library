@@ -27,6 +27,7 @@ BEGIN
 		DATEADD(DAY, 11, GETDATE())
 	);
 END;
+GO
 
 -- Loan 2
 DECLARE @BookID INT = 1; -- Philosopher's Stone
@@ -45,6 +46,7 @@ BEGIN
 		DATEADD(DAY, 13, GETDATE())
 	);
 END;
+GO
 
 -- Loan 3
 DECLARE @BookID INT = 20;  -- Storm Front
@@ -63,6 +65,7 @@ BEGIN
         DATEADD(DAY, 8, GETDATE())
     );
 END;
+GO
 
 -- Loan 4
 DECLARE @BookID INT = 47;  -- Guards! Guards!
@@ -81,6 +84,7 @@ BEGIN
         DATEADD(DAY, 10, GETDATE())
     );
 END;
+GO
 
 -- Loan 5
 DECLARE @BookID INT = 30;  -- Halo: The Fall of Reach
@@ -99,6 +103,7 @@ BEGIN
         DATEADD(DAY, 12, GETDATE())
     );
 END;
+GO
 
 -- Info not  in view
 DECLARE @BookID INT = 14;  -- Fellowship of the Ring
