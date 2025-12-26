@@ -26,10 +26,6 @@ BEGIN
 		DATEADD(DAY, -3, GETDATE()),
 		DATEADD(DAY, 11, GETDATE())
 	);
-
-	UPDATE Book
-	SET CopiesAvailable = CopiesAvailable -1
-	WHERE BookID = @BookID;
 END;
 
 -- Loan 2
@@ -48,10 +44,6 @@ BEGIN
 		DATEADD(DAY, -1, GETDATE()),
 		DATEADD(DAY, 13, GETDATE())
 	);
-
-	UPDATE Book
-	SET CopiesAvailable = CopiesAvailable - 1
-	WHERE BookID = @BookID;
 END;
 
 -- Loan 3
@@ -70,10 +62,6 @@ BEGIN
         DATEADD(DAY, -6, GETDATE()),
         DATEADD(DAY, 8, GETDATE())
     );
-
-    UPDATE Book
-    SET CopiesAvailable = CopiesAvailable - 1
-    WHERE BookID = @BookID;
 END;
 
 -- Loan 4
@@ -92,10 +80,6 @@ BEGIN
         DATEADD(DAY, -4, GETDATE()),
         DATEADD(DAY, 10, GETDATE())
     );
-
-    UPDATE Book
-    SET CopiesAvailable = CopiesAvailable - 1
-    WHERE BookID = @BookID;
 END;
 
 -- Loan 5
@@ -114,10 +98,6 @@ BEGIN
         DATEADD(DAY, -2, GETDATE()),
         DATEADD(DAY, 12, GETDATE())
     );
-
-    UPDATE Book
-    SET CopiesAvailable = CopiesAvailable - 1
-    WHERE BookID = @BookID;
 END;
 
 -- Info not  in view
@@ -138,10 +118,6 @@ VALUES (
     DATEADD(DAY, -21, GETDATE()),
     DATEADD(DAY, -25, GETDATE())
 );
-
-UPDATE Book
-SET CopiesAvailable = CopiesAvailable + 1
-WHERE BookID = @BookID;
 
 SELECT *
 FROM vw_ActiveLoans
