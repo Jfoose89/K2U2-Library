@@ -1,59 +1,157 @@
 # K2U2-Library SQL Project
-
 Overview
 
-This project implements a small library system with books, members, loans, and automated tracking of copies available. The database ensures data integrity for loans and returns and logs all actions for auditing.
+This project implements a small library system with books, members, loans, and automated tracking of available copies.
+The database enforces loan rules at the database level to ensure that books cannot be loaned when no copies are available, while preserving historical loan data.
 
 Database Structure
 
-Book: Stores books with total and available copies.
+Book
+Stores books with:
 
-Member: Stores library members.
+CopiesTotal
 
-Loan: Tracks which member has borrowed which book and when; includes ReturnDate.
+CopiesAvailable
 
-LoanLog: Logs all loan and return actions.
+Member
+Stores library members.
 
-Triggers & Stored Procedure
+Loan
+Tracks which member has borrowed which book, including:
 
-usp_RegisterLoan:
+LoanDate
 
-Each loan insertion checks that copies are available before inserting.
+DueDate
 
-When a loan is created, the available copy count is reduced.
+ReturnDate (NULL = active loan)
 
-Returned loans store a ReturnDate and restore availability.
+LoanLog
+Logs loan and return actions for auditing purposes.
 
-Active loans are identified via ReturnDate IS NULL and exposed through a view (vw_ActiveLoans).
+Stored Procedure & Views
+usp_RegisterLoan
 
-Triggers:
+All new loans are created using the usp_RegisterLoan stored procedure.
 
-trg_DecreaseCopiesOnLoan: Decreases CopiesAvailable when a new loan is inserted.
+Verifies that CopiesAvailable > 0 before inserting a loan
 
-trg_IncreaseCopiesOnReturn: Increases CopiesAvailable when a loan is returned.
+Inserts a loan with ReturnDate = NULL
 
-trg_LogLoanActions: Logs all loan and return actions into LoanLog.
+Throws an error and rolls back the transaction if no copies are available
+
+This guarantees that invalid loans cannot be created.
+
+Active Loans View
+
+vw_ActiveLoans
+
+Defines active loans as records where ReturnDate IS NULL
+
+Used for reporting and verification
+
+Ensures active loans are clearly separated from historical data
+
+Triggers
+
+Triggers are used to enforce data integrity even if inserts or updates bypass the stored procedure.
+
+trg_DecreaseCopiesOnLoan
+Decreases CopiesAvailable when a new active loan is inserted.
+
+trg_IncreaseCopiesOnReturn
+Increases CopiesAvailable when a loan is returned (ReturnDate is set).
+
+trg_LogLoanActions
+Logs all loan and return actions into LoanLog.
+
+Triggers ensure that availability cannot become negative and that all actions are logged.
+
+Inventory Consistency
+
+Before testing, book availability is synchronized using the following logic:
+
+CopiesAvailable = CopiesTotal - ActiveLoans
+
+
+This guarantees a consistent baseline state, even when historical loans exist in the database.
 
 SQL Scripts / Files
 
-triggers.sql – All triggers (Decrease, Increase, Log).
+create_tables_and_inserts.sql
+Creates the database, tables, sample books, members, and initial loan data.
 
-backfill_loanlog.sql – Populates LoanLog for existing loans (one-time setup).
+stored_procedure.sql
+Creates usp_RegisterLoan.
 
-verify_inventory.sql – Optional: Checks that CopiesAvailable + active loans = CopiesTotal for all books.
+triggers.sql
+Creates all triggers (decrease, increase, logging).
 
-stored_procedure.sql – usp_RegisterLoan stored procedure to safely register loans.
+backfill_loanlog.sql (optional, one-time)
+Populates LoanLog for pre-existing loans.
 
-create_tables_and_inserts.sql – Database and table creation, sample books and members, initial loan inserts.
+verify_inventory.sql (optional)
+Verifies that:
+
+CopiesAvailable + ActiveLoans = CopiesTotal
+
+
+test_loans.sql (recommended)
+Executes controlled test cases to validate loan behavior and error handling.
 
 Usage
 
-Run create_tables_and_inserts.sql to set up the database.
+Run create_tables_and_inserts.sql
 
-Run stored_procedure.sql to create the loan procedure.
+Run stored_procedure.sql
 
-Run triggers.sql to create triggers.
+Run triggers.sql
 
-(Optional) Run backfill_loanlog.sql to populate the log for pre-existing loans.
+(Optional) Run backfill_loanlog.sql
 
-(Optional) Run verify_inventory.sql to confirm consistency.
+(Optional) Run verify_inventory.sql
+
+Run test_loans.sql to validate behavior
+
+Result
+
+Books cannot be loaned if no copies are available
+
+Availability remains accurate at all times
+
+Historical loan data is preserved
+
+Business rules are enforced at the database level
+
+All key scenarios are tested and verified
+
+
+ER Diagram
+
+ENTITIES:
+
+BOOK
+(Attributes)
+- BookID (PK)
+- ISBN (UNIQUE)
+- Title
+- Author
+- PublishedYear
+- CopiesTotal
+- CopiesAvailable
+
+MEMBER
+(Attributes)
+- MemberID (PK)
+- FirstName
+- LastName
+- Email (UNIQUE)
+- Phone
+
+LOAN
+(Attributes)
+- LoanID (PK)
+- BookID (FK → BOOK.BookID)
+- MemberID (FK → MEMBER.MemberID)
+- LoanDate
+- DueDate
+- ReturnedDate
