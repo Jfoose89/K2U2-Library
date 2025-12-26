@@ -1,3 +1,4 @@
+-- Loan Insert Query
 SELECT BookID, Title, CopiesAvailable
 FROM Book
 WHERE CopiesAvailable > 0
@@ -149,3 +150,101 @@ ORDER BY DueDate;
 SELECT BookID, Title, CopiesAvailable
 FROM Book
 WHERE BookID IN (8, 1, 20, 47, 30, 14);
+
+-- Active Loan Query
+SELECT
+    name,
+    database_id,
+    create_date
+FROM sys.databases
+WHERE name = 'K2U2Library';
+
+USE K2U2Library;
+GO
+
+SELECT name FROM sys.tables;
+SELECT name FROM sys.views;
+
+-- Create Views
+CREATE VIEW vw_MostFrequentBooks AS
+SELECT
+	b.BookID,
+	b.Title,
+	COUNT(l.LoanID) AS TimesBorrowed
+FROM Loan l
+JOIN Book b ON l.BookID = b.BookID
+GROUP BY b.BookID, b.Title;
+
+SELECT *
+FROM vw_MostFrequentBooks
+ORDER BY TimesBorrowed DESC;
+
+CREATE VIEW vw_OverdueLoans AS
+SELECT
+	l.LoanID,
+	m.MemberID,
+	CONCAT(m.FirstName, '', m.LastName) AS MemberName,
+	b.BookID,
+	b.Title,
+	l.LoanDate,
+	l.DueDate
+FROM Loan AS l
+INNER JOIN Member m ON l.MemberID = m.MemberID
+INNER JOIN Book b ON l.BookID = b.BookID
+WHERE l.ReturnDate IS NULL
+	AND l.DueDate < GETDATE();
+
+SELECT *
+FROM vw_OverdueLoans
+ORDER BY DueDate;
+
+UPDATE dbo.Loan
+SET DueDate = DATEADD(day, -5, GETDATE())
+WHERE LoanID = 1;
+
+USE K2U2Library;
+GO
+
+CREATE VIEW vw_MemberBorrowingHistory AS
+SELECT
+	l.LoanID,
+	m.MemberID,
+	CONCAT(m.FirstName, '', m.LastName) AS MemberName,
+	b.BookID,
+	b.Title,
+	l.LoanDate,
+	l.DueDate,
+	l.ReturnDate
+FROM dbo.Loan AS l
+INNER JOIN dbo.Member AS m ON l.MemberID = m.MemberID
+INNER JOIN dbo.Book AS b ON l.BookID = b.BookID;
+
+-- Member Borrowing History Query
+
+-- See all loans for all members
+SELECT *
+FROM vw_MemberBorrowingHistory;
+
+-- See loans for a specific member
+SELECT *
+FROM vw_MemberBorrowingHistory
+WHERE MemberID = 1
+ORDER BY LoanDate DESC;
+
+-- See only returned loans
+SELECT *
+FROM vw_MemberBorrowingHistory
+WHERE MemberID = 1
+ORDER BY LoanDate DESC;
+
+-- See only returned loans
+SELECT *
+FROM vw_MemberBorrowingHistory
+WHERE ReturnDate IS NOT NULL
+ORDER BY ReturnDate DESC;
+
+-- See only active loans
+SELECT *
+FROM vw_MemberBorrowingHistory
+WHERE ReturnDate IS NULL
+ORDER BY DueDate ASC;
