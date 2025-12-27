@@ -1,6 +1,8 @@
 # K2U2-Library SQL Project
 Overview
 
+# *All files related to the project are in the branch Master*
+
 This project implements a small library system with books, members, loans, and automated tracking of available copies.
 The database enforces loan rules at the database level to ensure that books cannot be loaned when no copies are available, while preserving historical loan data.
 
