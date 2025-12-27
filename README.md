@@ -124,8 +124,47 @@ Business rules are enforced at the database level
 
 All key scenarios are tested and verified
 
+## Console Application
+
+The console application interacts with the K2U2Library database and provides a simple menu-driven interface to:
+
+- Register new books
+  - Validates ISBN, title, author, published year, and total copies
+  - Confirms details before saving
+- Register new members
+  - Validates first name, last name, email, and phone
+  - Confirms details before saving
+- Register new loans
+  - Checks member and book existence
+  - Ensures copies are available
+  - Confirms before saving
+- Register returns
+  - Allows returning a book by specifying LoanID
+- Show active loans
+  - Displays all loans where ReturnDate IS NULL
+  - Shows member full name, book title, loan and due dates
+- Search books
+  - Allows searching by title, author, or ISBN
+ 
+## Reflections & Optimizations
+
+- **Triggers** ensure CopiesAvailable is always accurate and all loan/return actions are logged.
+- **Stored procedure** prevents invalid loans and enforces business rules at the database level.
+- **Views** provide convenient reporting (active loans, overdue loans, borrowing history, most frequent books).
+- **Indexes** are applied on BookID, MemberID, and CopiesAvailable to speed up queries for loans and searches.
+- **EF Database First** allows the console app to interact with the existing database without redefining models.
+
+## Testing & Validation
+
+- Simulated multiple loans and returns to verify copies availability logic.
+- Confirmed that historical loan data is preserved in LoanLog.
+- Tested concurrent loan attempts to ensure transactional integrity.
+- Used verify_inventory.sql to ensure CopiesAvailable matches expected values.
+
 
 ER Diagram
+
+![ER Diagram](documents/K2U2LibraryERDiagram.png)
 
 ENTITIES:
 
